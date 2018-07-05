@@ -1,15 +1,10 @@
 package com.rws.jsonclassifier;
 
 import android.Manifest;
-import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,24 +14,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
     private File mother_path;
     private File original_path;
-    private File destinty_path;
+    private File destiny_path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mother_path = new File(Environment.getExternalStorageDirectory(), "JSON_Labeler");
         original_path = new File(mother_path, "originals");
-        destinty_path = new File(mother_path, "labeled");
+        destiny_path = new File(mother_path, "labeled");
 
-        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createDirectory();
@@ -49,15 +40,37 @@ public class MainActivity extends AppCompatActivity {
                 refreshData();
             }
         });
+
+        Button go = findViewById(R.id.button_go);
+        go.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runLabeler();
+            }
+
+        });
+
+
+
     }
+
+    public void runLabeler(){
+        Intent next = new Intent(this, Labeler.class);
+        startActivity(next);
+    }
+
     public void refreshData(){
         int ready = checkReadyFiles();
         int done = checkDoneFiles();
 
         TextView e = findViewById(R.id.textView);
         e.setText("Right now there's:\n" + ready + " json files ready | " + done + " json files labeled");
+
+        TextView down = findViewById(R.id.message);
+        down.setText(original_path.getAbsolutePath());
     }
     public int checkReadyFiles(){
+
         File [] files = original_path.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -68,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         return files.length;
     }
     public int checkDoneFiles(){
-        File [] files = destinty_path.listFiles(new FilenameFilter() {
+        File [] files = destiny_path.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".json");
