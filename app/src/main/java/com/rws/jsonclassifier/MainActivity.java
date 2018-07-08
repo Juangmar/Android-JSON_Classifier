@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createDirectory();
+        createDirectoryDest();
         refreshData();
 
         Button r = findViewById(R.id.refresh);
@@ -53,12 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
     public void runLabeler(){
         Intent next = new Intent(this, Labeler.class);
         startActivity(next);
     }
-
     public void refreshData(){
         int ready = checkReadyFiles();
         int done = checkDoneFiles();
@@ -127,6 +126,32 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+    public void createDirectoryDest() {
+        if (!mother_path.exists()) {
+            final int CUSTOM = 1;  // The request code
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CUSTOM);
+                createDirectory();
+            } else {
+                if (!mother_path.mkdirs()) Log.d("App", "failed to create directory");
+            }
+        }
+        //THE FIRST DIRECTORY ALREADY EXISTS
+        if (!destiny_path.exists()) {
+            if (!destiny_path.mkdirs()) {
+                Toast toast = Toast.makeText(this, "The child directory destiny can't be created", Toast.LENGTH_LONG);
+                toast.show();
+            } else {
+                notifyDirectory(destiny_path);
+            }
+        }else{
+            //ALL DIRECTORIES ARE CREATED
+        }
     }
     public void notifyDirectory(File e){
         Toast toast = Toast.makeText(this, "The directory has been created at "  + e.getAbsolutePath() +
