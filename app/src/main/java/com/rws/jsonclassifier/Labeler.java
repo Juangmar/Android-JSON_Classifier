@@ -5,6 +5,8 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,12 +22,15 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.Iterator;
 
 public class Labeler extends AppCompatActivity {
 
     private File mother_path;
     private File original_path;
     private File destiny_path;
+
+    private File currentFile;
     private File[] list;
     private int index;
     private final String fieldname = "training";
@@ -72,7 +77,7 @@ public class Labeler extends AppCompatActivity {
         String json_string;
         JSONObject json_obj = null;
         try {
-            FileInputStream is = new FileInputStream(list[index]);
+            FileInputStream is = new FileInputStream(currentFile);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -106,13 +111,16 @@ public class Labeler extends AppCompatActivity {
         } else{
             Toast.makeText(getBaseContext(), "path doasn't exist", Toast.LENGTH_LONG).show();
         }
-
+        if(currentFile.delete()) Toast.makeText(getBaseContext(), "json labeled!", Toast.LENGTH_SHORT).show();
         changeFile();
     }
 
     private void changeFile(){
         if(list == null || (list.length-1<index)) {
 
+            TextView textV = findViewById(R.id.jsonShower);
+            textV.setText("No JSONs left label! Place more .json files at "
+                    + this.original_path.getAbsolutePath());
         }
         else {
             String json;
@@ -125,7 +133,25 @@ public class Labeler extends AppCompatActivity {
                 is.close();
                 json = new String(buffer, "UTF-8");
                 JSONObject obj = new JSONObject(json);
-                textV.setText(obj.toString().replaceAll(",", ",\n"));
+                LinearLayout parent = findViewById(R.id.container);
+                parent.setBackground(getDrawable(R.drawable.layout_bg));
+                parent.removeAllViews();
+                Iterator<?> keys = obj.keys();
+                while(keys.hasNext() ) {
+                    TextView n = new TextView(this);
+                    String val = "";
+                    String key = (String)keys.next();
+                    if (obj.get(key) instanceof JSONObject ) {
+                        JSONObject xx = new JSONObject(obj.get(key).toString());
+                        val = xx.toString();
+                    } else{
+                        val = obj.get(key).toString();
+                    }
+                    n.setText(key + " = " + val);
+                    n.setBackground(getDrawable(R.drawable.layout_bg));
+                    parent.addView(n);
+                }
+                //textV.setText(obj.toString().replaceAll(",", ",\n"));
             } catch (FileNotFoundException e) {
                 textV.setText(e.getMessage());
             } catch (UnsupportedEncodingException e) {
@@ -135,6 +161,8 @@ public class Labeler extends AppCompatActivity {
             } catch (JSONException e) {
                 textV.setText(e.getMessage());
             }
+            currentFile = list[index];
+
             index++;
         }
     }
