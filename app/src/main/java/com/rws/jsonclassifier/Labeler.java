@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,13 +66,15 @@ public class Labeler extends AppCompatActivity {
             }
         });
         index = 0;
-        if(list != null && list.length > 0){
-            changeFile();
-        }
+        changeFile();
 
     }
 
     private void label(Boolean answer){
+        if(currentFile == null) {
+            Toast.makeText(getBaseContext(), "There's no files!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String json_string;
         JSONObject json_obj = null;
         try {
@@ -117,10 +118,13 @@ public class Labeler extends AppCompatActivity {
 
     private void changeFile(){
         if(list == null || (list.length-1<index)) {
-
-            TextView textV = findViewById(R.id.jsonShower);
-            textV.setText("No JSONs left label! Place more .json files at "
-                    + this.original_path.getAbsolutePath());
+            LinearLayout parent = findViewById(R.id.container);
+            parent.removeAllViews();
+            TextView n = new TextView(this);
+            String val = "There's no JSONs to label! Put more .json files in the folder " + original_path.getAbsolutePath();
+            n.setText(val);
+            n.setBackground(getDrawable(R.drawable.layout_bg));
+            parent.addView(n);
         }
         else {
             String json;

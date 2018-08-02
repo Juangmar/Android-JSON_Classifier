@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
         int done = checkDoneFiles();
 
         TextView e = findViewById(R.id.textView);
-        e.setText("Right now there's:\n" + ready + " json files ready | " + done + " json files labeled");
+        e.setText("Right now there's:\n" + ready + " json files ready\n" + done + " json files labeled");
 
         TextView down = findViewById(R.id.message);
-        down.setText(original_path.getAbsolutePath());
+        down.setText("please, put the .json files you want to label in the following folder:\n\n" + original_path.getAbsolutePath());
     }
     public int checkReadyFiles(){
 
