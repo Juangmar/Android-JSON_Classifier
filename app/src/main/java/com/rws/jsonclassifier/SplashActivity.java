@@ -7,12 +7,14 @@ import android.os.Bundle;
 
 public class SplashActivity extends AppCompatActivity {
 
+    public static boolean ready;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
         final Context e = this;
+        ready = false;
         Thread timer= new Thread()
         {
             public void run()
@@ -20,7 +22,8 @@ public class SplashActivity extends AppCompatActivity {
                 try
                 {
                     //Display for 3 seconds
-                    sleep(3000);
+                    sleep(2000);
+                    ready = true;
                 }
                 catch (InterruptedException e)
                 {
@@ -29,12 +32,17 @@ public class SplashActivity extends AppCompatActivity {
                 finally
                 {
                     //Goes to Activity  StartingPoint.java(STARTINGPOINT)
-                    Intent next = new Intent(e, MainActivity.class);
-                    startActivity(next);
+
                 }
             }
         };
         timer.start();
+        while(!ready){
+            //Wait until the loader's thread finishes.
+        }
+        Intent next = new Intent(e, MainActivity.class);
+        startActivity(next);
+
     }
     //Destroy Welcome_screen.java after it goes to next activity
     @Override
