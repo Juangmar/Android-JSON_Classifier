@@ -15,15 +15,18 @@ public class SplashActivity extends AppCompatActivity {
 
         final Context e = this;
         ready = false;
-        Thread timer= new Thread()
-        {
-            public void run()
-            {
-                try
-                {
+        Thread timer= new Thread() {
+            public void run() {
+                try {
                     //Display for 3 seconds
-                    sleep(2000);
-                    ready = true;
+                    sleep(3000);
+
+                    loadFolders(); //THIS SHOULD BE A THREAD
+                    while(!ready){
+                        //Wait until the loader's thread finishes.
+                    }
+                    Intent next = new Intent(e, MainActivity.class);
+                    startActivity(next);
                 }
                 catch (InterruptedException e)
                 {
@@ -34,14 +37,15 @@ public class SplashActivity extends AppCompatActivity {
                     //Goes to Activity  StartingPoint.java(STARTINGPOINT)
 
                 }
+
+            }
+            private void loadFolders(){
+                ready = true;
             }
         };
         timer.start();
-        while(!ready){
-            //Wait until the loader's thread finishes.
-        }
-        Intent next = new Intent(e, MainActivity.class);
-        startActivity(next);
+
+
 
     }
     //Destroy Welcome_screen.java after it goes to next activity
