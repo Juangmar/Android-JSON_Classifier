@@ -6,4 +6,5 @@
     <color name="yes">#649f30</color>
     <color name="colorPrimary">#660b9f</color>
     <color name="colorPrimaryDark">#351661</color>
+    <color name="transparent">#00ffffff</color>
 </resources>

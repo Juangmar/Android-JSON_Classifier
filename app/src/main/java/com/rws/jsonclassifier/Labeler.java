@@ -1,5 +1,6 @@
 package com.rws.jsonclassifier;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +9,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.widget.LinearLayout.LayoutParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -102,7 +103,7 @@ public class Labeler extends AppCompatActivity {
                     output = new BufferedWriter(new FileWriter(file));
                     output.write(json_obj.toString());
                     output.close();
-                    Toast.makeText(getApplicationContext(), "Composition saved", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "Composition saved", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -112,7 +113,7 @@ public class Labeler extends AppCompatActivity {
         } else{
             Toast.makeText(getBaseContext(), "path doasn't exist", Toast.LENGTH_LONG).show();
         }
-        if(currentFile.delete()) Toast.makeText(getBaseContext(), "json labeled!", Toast.LENGTH_SHORT).show();
+        //if(currentFile.delete()) Toast.makeText(getBaseContext(), "json labeled!", Toast.LENGTH_SHORT).show();
         changeFile();
     }
 
@@ -128,7 +129,7 @@ public class Labeler extends AppCompatActivity {
         }
         else {
             String json;
-            TextView textV = findViewById(R.id.jsonShower);
+            //TextView textV = findViewById(R.id.jsonShower);
             try {
                 FileInputStream is = new FileInputStream(list[index]);
                 int size = is.available();
@@ -138,32 +139,60 @@ public class Labeler extends AppCompatActivity {
                 json = new String(buffer, "UTF-8");
                 JSONObject obj = new JSONObject(json);
                 LinearLayout parent = findViewById(R.id.container);
-                parent.setBackground(getDrawable(R.drawable.layout_bg));
                 parent.removeAllViews();
                 Iterator<?> keys = obj.keys();
                 while(keys.hasNext() ) {
-                    TextView n = new TextView(this);
-                    String val = "";
+                    LinearLayout LL = new LinearLayout(this);
+                    LL.setBackground(getDrawable(R.drawable.layout_bg));
+                    LL.setOrientation(LinearLayout.VERTICAL);
+
+                    LayoutParams LLParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+                    LL.setWeightSum(6f);
+                    LL.setLayoutParams(LLParams);
+                    parent.addView(LL);
+
+                    TextView title = new TextView(this);
                     String key = (String)keys.next();
+                    title.setText(key);
+                    title.setTypeface(null, Typeface.BOLD);
+                    //title.setBackground(getDrawable(R.color.transparent));
+                    LL.addView(title);
+
+
+
+                    String val = "";
                     if (obj.get(key) instanceof JSONObject ) {
                         JSONObject xx = new JSONObject(obj.get(key).toString());
                         val = xx.toString();
-                    } else{
+                    } else {
                         val = obj.get(key).toString();
                     }
-                    n.setText(key + " = " + val);
-                    n.setBackground(getDrawable(R.drawable.layout_bg));
-                    parent.addView(n);
+
+                    LinearLayout son = new LinearLayout(this);
+                    son.setBackground(getDrawable(R.drawable.layout_bg));
+                    son.setOrientation(LinearLayout.VERTICAL);
+
+                    LayoutParams par = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+                    LL.setWeightSum(6f);
+                    LL.setLayoutParams(par);
+
+
+
+                    TextView sonTXT = new TextView(this);
+                    sonTXT.setText(val);
+                    sonTXT.setBackground(getDrawable(R.color.transparent));
+                    son.addView(sonTXT);
+                    LL.addView(son);
                 }
                 //textV.setText(obj.toString().replaceAll(",", ",\n"));
             } catch (FileNotFoundException e) {
-                textV.setText(e.getMessage());
+                //textV.setText(e.getMessage());
             } catch (UnsupportedEncodingException e) {
-                textV.setText(e.getMessage());
+               // textV.setText(e.getMessage());
             } catch (IOException e) {
-                textV.setText(e.getMessage());
+                //textV.setText(e.getMessage());
             } catch (JSONException e) {
-                textV.setText(e.getMessage());
+                //textV.setText(e.getMessage());
             }
             currentFile = list[index];
 
