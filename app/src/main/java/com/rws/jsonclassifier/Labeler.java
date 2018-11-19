@@ -10,6 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -99,10 +101,11 @@ public class Labeler extends AppCompatActivity {
             if(destiny_path.canWrite()){
                 try {
                     Writer output = null;
-                    File file = new File(destiny_path + "/" + list[index].getName());
+                    File file = new File(destiny_path + "/" + currentFile.getName());
                     output = new BufferedWriter(new FileWriter(file));
                     output.write(json_obj.toString());
                     output.close();
+                    currentFile.delete();
                     //Toast.makeText(getApplicationContext(), "Composition saved", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -140,6 +143,9 @@ public class Labeler extends AppCompatActivity {
                 JSONObject obj = new JSONObject(json);
                 LinearLayout parent = findViewById(R.id.container);
                 parent.removeAllViews();
+                printFields(obj, parent);
+                /*LinearLayout parent = findViewById(R.id.container);
+                parent.removeAllViews();
                 Iterator<?> keys = obj.keys();
                 while(keys.hasNext() ) {
                     LinearLayout LL = new LinearLayout(this);
@@ -157,13 +163,10 @@ public class Labeler extends AppCompatActivity {
                     title.setTypeface(null, Typeface.BOLD);
                     //title.setBackground(getDrawable(R.color.transparent));
                     LL.addView(title);
-
-
-
                     String val = "";
                     if (obj.get(key) instanceof JSONObject ) {
                         JSONObject xx = new JSONObject(obj.get(key).toString());
-                        val = xx.toString();
+
                     } else {
                         val = obj.get(key).toString();
                     }
@@ -184,7 +187,7 @@ public class Labeler extends AppCompatActivity {
                     son.addView(sonTXT);
                     LL.addView(son);
                 }
-                //textV.setText(obj.toString().replaceAll(",", ",\n"));
+                //textV.setText(obj.toString().replaceAll(",", ",\n"));*/
             } catch (FileNotFoundException e) {
                 //textV.setText(e.getMessage());
             } catch (UnsupportedEncodingException e) {
@@ -197,6 +200,54 @@ public class Labeler extends AppCompatActivity {
             currentFile = list[index];
 
             index++;
+        }
+    }
+    private void printFields(JSONObject obj, LinearLayout parent){
+        try{
+            Iterator<?> keys = obj.keys();
+            while(keys.hasNext() ) {
+                LinearLayout LL = new LinearLayout(this);
+                LL.setBackground(getDrawable(R.drawable.layout_bg));
+                LL.setOrientation(LinearLayout.VERTICAL);
+
+                LayoutParams LLParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+                LL.setWeightSum(6f);
+                LL.setLayoutParams(LLParams);
+                parent.addView(LL);
+
+                TextView title = new TextView(this);
+                String key = (String)keys.next();
+                title.setText(key);
+                title.setTypeface(null, Typeface.BOLD);
+                //title.setBackground(getDrawable(R.color.transparent));
+                LL.addView(title);
+                Object n = obj.get(key);
+                if (obj.get(key) instanceof JSONObject ) {
+                    JSONObject xx = new JSONObject((obj.get(key)).toString());
+                    printFields(xx, LL);
+                }
+                else{
+                    String val = obj.get(key).toString();
+                    LinearLayout son = new LinearLayout(this);
+                    son.setBackground(getDrawable(R.drawable.layout_bg));
+                    son.setOrientation(LinearLayout.VERTICAL);
+
+                    LayoutParams par = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+                    LL.setWeightSum(6f);
+                    LL.setLayoutParams(par);
+
+                    TextView sonTXT = new TextView(this);
+                    sonTXT.setText(val);
+                    sonTXT.setBackground(getDrawable(R.color.transparent));
+                    son.addView(sonTXT);
+
+                    LL.addView(son);
+                }
+            }
+            //textV.setText(obj.toString().replaceAll(",", ",\n"));
+            //textV.setText(e.getMessage());
+        } catch (JSONException e) {
+            //textV.setText(e.getMessage());
         }
     }
 }
