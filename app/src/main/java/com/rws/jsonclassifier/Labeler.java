@@ -132,7 +132,6 @@ public class Labeler extends AppCompatActivity {
         }
         else {
             String json;
-            //TextView textV = findViewById(R.id.jsonShower);
             try {
                 FileInputStream is = new FileInputStream(list[index]);
                 int size = is.available();
@@ -151,9 +150,8 @@ public class Labeler extends AppCompatActivity {
                     LinearLayout LL = new LinearLayout(this);
                     LL.setBackground(getDrawable(R.drawable.layout_bg));
                     LL.setOrientation(LinearLayout.VERTICAL);
-
-                    LayoutParams LLParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
                     LL.setWeightSum(6f);
+                    LayoutParams LLParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
                     LL.setLayoutParams(LLParams);
                     parent.addView(LL);
 
@@ -163,6 +161,7 @@ public class Labeler extends AppCompatActivity {
                     title.setTypeface(null, Typeface.BOLD);
                     //title.setBackground(getDrawable(R.color.transparent));
                     LL.addView(title);
+
                     String val = "";
                     if (obj.get(key) instanceof JSONObject ) {
                         JSONObject xx = new JSONObject(obj.get(key).toString());
@@ -171,20 +170,28 @@ public class Labeler extends AppCompatActivity {
                         val = obj.get(key).toString();
                     }
 
+
                     LinearLayout son = new LinearLayout(this);
                     son.setBackground(getDrawable(R.drawable.layout_bg));
                     son.setOrientation(LinearLayout.VERTICAL);
-
                     LayoutParams par = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
-                    LL.setWeightSum(6f);
-                    LL.setLayoutParams(par);
+                    son.setWeightSum(6f);
+                    son.setLayoutParams(par);
 
-
-
-                    TextView sonTXT = new TextView(this);
-                    sonTXT.setText(val);
-                    sonTXT.setBackground(getDrawable(R.color.transparent));
-                    son.addView(sonTXT);
+                    if (obj.get(key) instanceof JSONObject ) {
+                        JSONObject xx = new JSONObject(obj.get(key).toString());
+                        Iterator<?> subkeys = xx.keys();
+                        while(subkeys.hasNext()) {
+                            String subkey = (String)subkeys.next();
+                            son.addView(generateCard(subkey, obj.get(key), 1));
+                        }
+                    } else {
+                        String val = obj.get(key).toString();
+                        TextView sonTXT = new TextView(this);
+                        sonTXT.setText(val);
+                        sonTXT.setBackground(getDrawable(R.color.transparent));
+                        son.addView(sonTXT);
+                    }
                     LL.addView(son);
                 }
                 //textV.setText(obj.toString().replaceAll(",", ",\n"));*/
