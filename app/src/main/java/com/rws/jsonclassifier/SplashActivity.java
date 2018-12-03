@@ -2,27 +2,33 @@ package com.rws.jsonclassifier;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import java.io.File;
+
 public class SplashActivity extends AppCompatActivity {
 
-    public static boolean ready;
+    public static int load_code;
+    private AppCompatActivity t;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
-
+        t = this;
         final Context e = this;
-        ready = false;
+        load_code = DataManager.INITIALIZING;
         Thread timer= new Thread() {
             public void run() {
                 try {
                     //Display for 3 seconds
                     sleep(3000);
 
-                    loadFolders(); //THIS SHOULD BE A THREAD
-                    while(!ready){
+                    Initializer load = new Initializer(t);
+                    load.start();
+
+                    while(!Initializer.ready){
                         //Wait until the loader's thread finishes.
                     }
                     Intent next = new Intent(e, MainActivity.class);
@@ -32,15 +38,6 @@ public class SplashActivity extends AppCompatActivity {
                 {
                     e.printStackTrace();
                 }
-                finally
-                {
-                    //Goes to Activity  StartingPoint.java(STARTINGPOINT)
-
-                }
-
-            }
-            private void loadFolders(){
-                ready = true;
             }
         };
         timer.start();

@@ -18,16 +18,9 @@ import java.io.FilenameFilter;
 
 public class MainActivity extends AppCompatActivity {
 
-    private File mother_path;
-    private File original_path;
-    private File destiny_path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mother_path = new File(Environment.getExternalStorageDirectory(), "JSON_Labeler");
-        original_path = new File(mother_path, "originals");
-        destiny_path = new File(mother_path, "labeled");
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createDirectory();
@@ -66,11 +59,11 @@ public class MainActivity extends AppCompatActivity {
         e.setText("Right now there's:\n" + ready + " json files ready\n" + done + " json files labeled");
 
         TextView down = findViewById(R.id.message);
-        down.setText("please, put the .json files you want to label in the following folder:\n\n" + original_path.getAbsolutePath());
+        down.setText("please, put the .json files you want to label in the following folder:\n\n" + DataManager.original_path.getAbsolutePath());
     }
     public int checkReadyFiles(){
 
-        File [] files = original_path.listFiles(new FilenameFilter() {
+        File [] files = DataManager.original_path.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".json");
@@ -80,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         return files.length;
     }
     public int checkDoneFiles(){
-        File [] files = destiny_path.listFiles(new FilenameFilter() {
+        File [] files = DataManager.destiny_path.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".json");
@@ -90,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         return files.length;
     }
     public void createDirectory() {
-        if (!mother_path.exists()) {
+        if (!DataManager.mother_path.exists()) {
             final int CUSTOM = 1;  // The request code
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -100,26 +93,26 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CUSTOM);
                 createDirectory();
             } else {
-                if (!mother_path.mkdirs()) {
+                if (!DataManager.mother_path.mkdirs()) {
                     Log.d("App", "failed to create directory");
                 } else {
                     //Fist Directory created!!!!
-                    if (!original_path.mkdirs()) {
+                    if (!DataManager.original_path.mkdirs()) {
                         Toast toast = Toast.makeText(this, "The child directories can't be created", Toast.LENGTH_LONG);
                         toast.show();
                     } else {
-                        notifyDirectory(original_path);
+                        notifyDirectory(DataManager.original_path);
                     }
                 }
             }
         } else{
             //THE FIRST DIRECTORY ALREADY EXISTS
-            if (!original_path.exists()) {
-                if (!original_path.mkdirs()) {
+            if (!DataManager.original_path.exists()) {
+                if (!DataManager.original_path.mkdirs()) {
                     Toast toast = Toast.makeText(this, "The child directories can't be created", Toast.LENGTH_LONG);
                     toast.show();
                 } else {
-                    notifyDirectory(original_path);
+                    notifyDirectory(DataManager.original_path);
                 }
             }else{
                 //ALL DIRECTORIES ARE CREATED
@@ -128,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void createDirectoryDest() {
-        if (!mother_path.exists()) {
+        if (!DataManager.mother_path.exists()) {
             final int CUSTOM = 1;  // The request code
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -138,16 +131,16 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CUSTOM);
                 createDirectory();
             } else {
-                if (!mother_path.mkdirs()) Log.d("App", "failed to create directory");
+                if (!DataManager.mother_path.mkdirs()) Log.d("App", "failed to create directory");
             }
         }
         //THE FIRST DIRECTORY ALREADY EXISTS
-        if (!destiny_path.exists()) {
-            if (!destiny_path.mkdirs()) {
+        if (!DataManager.destiny_path.exists()) {
+            if (!DataManager.destiny_path.mkdirs()) {
                 Toast toast = Toast.makeText(this, "The child directory destiny can't be created", Toast.LENGTH_LONG);
                 toast.show();
             } else {
-                notifyDirectory(destiny_path);
+                notifyDirectory(DataManager.destiny_path);
             }
         }else{
             //ALL DIRECTORIES ARE CREATED
